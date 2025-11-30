@@ -1,0 +1,213 @@
+/* --- RESET ET BASE --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* FIX DU FOND : "fixed" empêche le fond de bouger ou de se couper */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* --- STYLE DES TITRES DE SECTION (h3) --- */
+h3 {
+    text-align: center;
+    color: #555;
+    margin: 30px 0 15px 0;
+    font-size: 1.3em;
+}
+
+/* --- STYLE COMMUN POUR TOUS LES BOUTONS VIOLETS --- */
+.buttons button, 
+.advanced-search button, 
+.search-box button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-weight: 500;
+}
+
+.buttons button:hover, 
+.advanced-search button:hover, 
+.search-box button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* --- BOUTONS PRINCIPAUX (Menu du haut) --- */
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+/* --- TAGS DE GENRES --- */
+.genre-buttons {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.tag {
+    background-color: white;
+    border: 2px solid #667eea;
+    color: #667eea;
+    padding: 8px 16px;
+    margin: 5px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.tag:hover {
+    background-color: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* --- BARRE RECHERCHE AVANCÉE --- */
+.advanced-search {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.advanced-search input, 
+.advanced-search select {
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    width: 150px;
+}
+
+/* --- BARRE RECHERCHE ACTEUR --- */
+.search-box {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.search-box select {
+    flex: 1;
+    max-width: 400px;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: white;
+    cursor: pointer;
+    color: #333;
+}
+
+/* Focus joli pour tous les champs */
+input:focus, select:focus {
+    border-color: #667eea;
+    outline: none;
+}
+
+/* --- RÉSULTATS --- */
+.results { margin-top: 30px; }
+.results h2 { color: #333; margin-bottom: 20px; text-align: center; }
+
+.movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.movie-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+.movie-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); }
+.movie-card h3 { color: #333; margin-bottom: 10px; font-size: 1.1em; }
+.movie-card p { color: #666; margin: 5px 0; font-size: 0.9em; }
+
+/* --- TOP LIST --- */
+.top-list { display: flex; flex-direction: column; gap: 15px; }
+.top-item {
+    display: flex; align-items: center; background: #f8f9fa;
+    padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.rank { font-size: 2em; font-weight: bold; color: #667eea; margin-right: 20px; min-width: 50px; }
+.top-info h3 { color: #333; margin-bottom: 5px; }
+.top-info p { color: #666; font-size: 0.9em; }
+
+/* --- STATS (CORRIGÉ : Centrage parfait) --- */
+.stats-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 20px; 
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
+    /* Centrage parfait flexbox */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 130px;
+}
+
+.stat-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.2em;
+    color: white; /* Force le blanc pour le titre */
+}
+
+.stat-card p {
+    margin: 0;
+    font-size: 1.8em;
+    font-weight: bold;
+}
+
+/* --- ERREURS --- */
+.error { color: #dc3545; text-align: center; padding: 20px; background: #f8d7da; border-radius: 8px; }

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Films - Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div class="container">
+        
+        <h1>🎬 API de Films !</h1>
+        <p class="subtitle">Explorez notre base de données de films</p>
+
+        <div class="buttons">
+            <button onclick="getTousLesFilms()">Tous les films</button>
+            <button onclick="getTopRating()">Top 10 Rating</button>
+            <button onclick="getStats()">Statistiques Budget</button>
+        </div>
+
+        <div class="genre-buttons">
+            <h3>🎭 Choisir un genre</h3>
+            <button class="tag" onclick="getFilmsGenre('Action')">Action</button>
+            <button class="tag" onclick="getFilmsGenre('Comedy')">Comedy</button>
+            <button class="tag" onclick="getFilmsGenre('Horror')">Horror</button>
+            <button class="tag" onclick="getFilmsGenre('Romance')">Romance</button>
+            <button class="tag" onclick="getFilmsGenre('Drama')">Drama</button>
+            <button class="tag" onclick="getFilmsGenre('Science Fiction')">Sci-Fi</button>
+            <button class="tag" onclick="getFilmsGenre('Thriller')">Thriller</button>
+        </div>
+
+        <h3>⚙️ Recherche Avanncée</h3>
+        <div class="advanced-search">
+            <input type="number" id="yearInput" placeholder="Année (ex: 2010)">
+            
+            <select id="ratingInput">
+                <option value="" selected>-- Note Min --</option>
+                <option value="9">⭐ 9+</option>
+                <option value="8">⭐ 8+</option>
+                <option value="7">⭐ 7+</option>
+                <option value="6">⭐ 6+</option>
+                <option value="5">⭐ 5+</option>
+            </select>
+
+            <button onclick="rechercheAvancee()">Valider</button>
+        </div>
+
+        <h3 class="mt-large">🔍 Recherche par Acteur</h3>
+        <div class="search-box">
+            <select id="actorSelect">
+                <option value="" disabled selected>-- Choisir un acteur --</option>
+                <option value="Tom Hanks">Tom Hanks</option>
+                <option value="Brad Pitt">Brad Pitt</option>
+                <option value="Leonardo DiCaprio">Leonardo DiCaprio</option>
+                <option value="Johnny Depp">Johnny Depp</option>
+                <option value="Robert Downey Jr.">Robert Downey Jr.</option>
+                <option value="Scarlett Johansson">Scarlett Johansson</option>
+                <option value="Tom Cruise">Tom Cruise</option>
+                <option value="Will Smith">Will Smith</option>
+                <option value="Emma Watson">Emma Watson</option>
+            </select>
+            <button onclick="rechercher()">Rechercher</button>
+        </div>
+
+        <div id="results" class="results"></div>
+
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000';
+
+        // 1. Tous les films
+        function getTousLesFilms() {
+            fetch(`${API_URL}/movies`)
+                .then(r => r.json())
+                .then(data => afficherResultats(data.movies, `📽️ Tous les films (${data.total})`))
+                .catch(gererErreur);
+        }
+
+        // 2. Top Rating
+        function getTopRating() {
+            fetch(`${API_URL}/movies/top_rating`)
+                .then(r => r.json())
+                .then(data => {
+                    let html = `<h2>🏆 Top 10 des meilleurs films</h2><div class="top-list">`;
+                    data.top_movies.forEach((movie, index) => {
+                        html += `<div class="top-item"><span class="rank">#${index+1}</span><div class="top-info"><h3>${movie.title}</h3><p>⭐ ${movie.vote_average}/10</p></div></div>`;
+                    });
+                    html += '</div>';
+                    document.getElementById('results').innerHTML = html;
+                })
+                .catch(gererErreur);
+        }
+
+        // 3. Genres (Correction NaN incluse)
+        function getFilmsGenre(genre) {
+            fetch(`${API_URL}/movies/genre/${genre}`)
+                .then(r => r.text())
+                .then(text => JSON.parse(text.replace(/NaN/g, "null")))
+                .then(data => afficherResultats(data.movies, `🎭 Genre : ${data.genre} (${data.total})`))
+                .catch(gererErreur);
+        }
+
+        // 4. Stats (Avec Emojis)
+        function getStats() {
+            fetch(`${API_URL}/stats/budget`)
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('results').innerHTML = `
+                    <h2>📊 Statistiques sur le Budget</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card"><h3>💰 Moyenne</h3><p>${(data.mean/1e6).toFixed(2)} M$</p></div>
+                        <div class="stat-card"><h3>📈 Maximum</h3><p>${(data.max/1e6).toFixed(2)} M$</p></div>
+                        <div class="stat-card"><h3>📉 Minimum</h3><p>${(data.min/1e6).toFixed(2)} M$</p></div>
+                        <div class="stat-card"><h3>📊 Médiane</h3><p>${(data.median/1e6).toFixed(2)} M$</p></div>
+                    </div>`;
+                })
+                .catch(gererErreur);
+        }
+
+        // 5. Recherche Avancée
+        function rechercheAvancee() {
+            const year = document.getElementById('yearInput').value;
+            const minRating = document.getElementById('ratingInput').value;
+            
+            let url = `${API_URL}/movies/search?limit=20`;
+            if (year) url += `&year=${year}`;
+            if (minRating) url += `&min_rating=${minRating}`;
+            
+            fetch(url)
+                .then(r => r.json())
+                .then(data => afficherResultats(data.movies, `🔍 Recherche Avancée (${data.total})`))
+                .catch(gererErreur);
+        }
+
+        // 6. Recherche Acteur
+        function rechercher() {
+            const actor = document.getElementById('actorSelect').value;
+            if (actor) {
+                fetch(`${API_URL}/movies/${actor}`)
+                    .then(r => r.json())
+                    .then(data => afficherResultats(data.movies, `🔍 Films avec : ${actor} (${data.total})`))
+                    .catch(gererErreur);
+            } else {
+                alert("Choisissez un acteur !");
+            }
+        }
+
+        // Fonctions Utiles
+        function afficherResultats(movies, titre) {
+            let html = `<h2>${titre}</h2><div class="movies-grid">`;
+            if (movies && movies.length > 0) {
+                movies.forEach(movie => {
+                    const date = movie.release_date ? movie.release_date : "Inconnue";
+                    html += `<div class="movie-card"><h3>${movie.title}</h3><p>⭐ ${movie.vote_average}/10</p><p>📅 ${date}</p></div>`;
+                });
+            } else {
+                html += `<p>Aucun film trouvé.</p>`;
+            }
+            html += '</div>';
+            document.getElementById('results').innerHTML = html;
+        }
+
+        function gererErreur(e) {
+            console.error(e);
+            document.getElementById('results').innerHTML = `<p class="error">❌ Erreur : ${e}</p>`;
+        }
+    </script>
+</body>
+</html>
